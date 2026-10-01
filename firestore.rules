@@ -1,0 +1,198 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all unknown collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email != null && (
+          request.auth.token.email.lower() == 'robiuletc@gmail.com' ||
+          request.auth.token.email.lower() == 'mdmahbubsite@gmail.com'
+        )) ||
+        request.auth.token.admin == true ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Validation: Product
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 200
+        && data.price is number && data.price >= 0
+        && (!('originalPrice' in data) || (data.originalPrice is number && data.originalPrice >= 0))
+        && (!('category' in data) || (data.category is string && data.category.size() <= 100))
+        && (!('sku' in data) || (data.sku is string && data.sku.size() <= 100))
+        && (!('description' in data) || (data.description is string && data.description.size() <= 3000))
+        && (!('sizes' in data) || data.sizes is list)
+        && (!('images' in data) || data.images is list)
+        && (!('isBestSeller' in data) || data.isBestSeller is bool)
+        && (!('isPopular' in data) || data.isPopular is bool)
+        && (!('imageType' in data) || (data.imageType is string && data.imageType.size() <= 100));
+    }
+
+    // Validation: Category
+    function isValidCategory(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && (!('slug' in data) || (data.slug is string && data.slug.size() <= 100))
+        && (!('description' in data) || (data.description is string && data.description.size() <= 500))
+        && (!('icon' in data) || (data.icon is string && data.icon.size() <= 100));
+    }
+
+    // Validation: Order
+    function isValidOrder(data) {
+      return (
+        // Customer Name
+        data.customerName is string && data.customerName.size() > 0 && data.customerName.size() <= 150
+        // Customer Phone (either phone or customerPhone)
+        && ((('phone' in data) && data.phone is string && data.phone.size() > 0 && data.phone.size() <= 30) ||
+            (('customerPhone' in data) && data.customerPhone is string && data.customerPhone.size() > 0 && data.customerPhone.size() <= 30))
+        // Delivery Address (either address or deliveryAddress)
+        && ((('address' in data) && data.address is string && data.address.size() > 0 && data.address.size() <= 500) ||
+            (('deliveryAddress' in data) && data.deliveryAddress is string && data.deliveryAddress.size() > 0 && data.deliveryAddress.size() <= 500))
+        // Total Amount
+        && data.total is number && data.total >= 0
+        // Shipping Area (dhaka, outside, emergency)
+        && (!('shippingArea' in data) || (data.shippingArea is string && data.shippingArea in ['dhaka', 'outside', 'emergency']))
+        // Payment Method
+        && (!('paymentMethod' in data) || (data.paymentMethod is string && data.paymentMethod in ['cod', 'bkash', 'nagad', 'rocket', 'upay']))
+        // Status
+        && (!('status' in data) || (data.status is string && data.status in ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled']))
+        // Optional Fields
+        && (!('note' in data) || (data.note is string && data.note.size() <= 1000))
+        && (!('orderId' in data) || (data.orderId is string && data.orderId.size() <= 128))
+        && (!('items' in data) || data.items is list)
+        && (!('subtotal' in data) || (data.subtotal is number && data.subtotal >= 0))
+        && (!('shippingCost' in data) || (data.shippingCost is number && data.shippingCost >= 0))
+        && (!('paymentSenderNumber' in data) || (data.paymentSenderNumber is string && data.paymentSenderNumber.size() <= 30))
+        && (!('transactionId' in data) || (data.transactionId is string && data.transactionId.size() <= 100))
+        && (!('orderDate' in data) || (data.orderDate is string && data.orderDate.size() <= 100))
+      );
+    }
+
+    // Validation: Review
+    function isValidReview(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.rating is number && data.rating >= 1 && data.rating <= 5
+        && data.comment is string && data.comment.size() > 0 && data.comment.size() <= 2000
+        && (!('location' in data) || (data.location is string && data.location.size() <= 150))
+        && (!('city' in data) || (data.city is string && data.city.size() <= 100))
+        && (!('bangleName' in data) || (data.bangleName is string && data.bangleName.size() <= 200))
+        && (!('verified' in data) || data.verified is bool)
+        && (!('date' in data) || (data.date is string && data.date.size() <= 100));
+    }
+
+    // Validation: Message
+    function isValidMessage(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.phone is string && data.phone.size() > 0 && data.phone.size() <= 30
+        && data.message is string && data.message.size() > 0 && data.message.size() <= 3000
+        && (!('read' in data) || data.read is bool)
+        && (!('date' in data) || (data.date is string && data.date.size() <= 100));
+    }
+
+    // Validation: Store Settings
+    function isValidSettings(data) {
+      return (!('siteName' in data) || (data.siteName is string && data.siteName.size() <= 150))
+        && (!('logoUrl' in data) || (data.logoUrl is string && data.logoUrl.size() <= 2000))
+        && (!('headerLogoUrl' in data) || (data.headerLogoUrl is string && data.headerLogoUrl.size() <= 2000))
+        && (!('footerLogoUrl' in data) || (data.footerLogoUrl is string && data.footerLogoUrl.size() <= 2000))
+        && (!('hotlinePhone' in data) || (data.hotlinePhone is string && data.hotlinePhone.size() <= 30))
+        && (!('whatsappNumber' in data) || (data.whatsappNumber is string && data.whatsappNumber.size() <= 30))
+        && (!('storeEmail' in data) || (data.storeEmail is string && data.storeEmail.size() <= 150))
+        && (!('storeAddress' in data) || (data.storeAddress is string && data.storeAddress.size() <= 500))
+        && (!('storeWorkingHours' in data) || (data.storeWorkingHours is string && data.storeWorkingHours.size() <= 150))
+        && (!('announcementText' in data) || (data.announcementText is string && data.announcementText.size() <= 500))
+        && (!('shippingInsideDhaka' in data) || (data.shippingInsideDhaka is number && data.shippingInsideDhaka >= 0))
+        && (!('shippingOutsideDhaka' in data) || (data.shippingOutsideDhaka is number && data.shippingOutsideDhaka >= 0))
+        && (!('shippingEmergency' in data) || (data.shippingEmergency is number && data.shippingEmergency >= 0))
+        && (!('merchantBkash' in data) || (data.merchantBkash is string && data.merchantBkash.size() <= 30))
+        && (!('merchantNagad' in data) || (data.merchantNagad is string && data.merchantNagad.size() <= 30))
+        && (!('merchantRocket' in data) || (data.merchantRocket is string && data.merchantRocket.size() <= 30))
+        && (!('merchantUpay' in data) || (data.merchantUpay is string && data.merchantUpay.size() <= 30))
+        && (!('promoPopupEnabled' in data) || data.promoPopupEnabled is bool)
+        && (!('promoPopupImage' in data) || (data.promoPopupImage is string && data.promoPopupImage.size() <= 2000))
+        && (!('promoPopupTitle' in data) || (data.promoPopupTitle is string && data.promoPopupTitle.size() <= 200))
+        && (!('promoPopupText' in data) || (data.promoPopupText is string && data.promoPopupText.size() <= 1000))
+        && (!('promoPopupButtonText' in data) || (data.promoPopupButtonText is string && data.promoPopupButtonText.size() <= 100))
+        && (!('promoPopupButtonUrl' in data) || (data.promoPopupButtonUrl is string && data.promoPopupButtonUrl.size() <= 500));
+    }
+
+    // 1. PRODUCTS COLLECTION
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidId(productId) && isValidProduct(incoming());
+      allow update: if isAdmin() && isValidProduct(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // 2. CATEGORIES COLLECTION
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidId(categoryId) && isValidCategory(incoming());
+      allow update: if isAdmin() && isValidCategory(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // 3. ORDERS COLLECTION
+    match /orders/{orderId} {
+      // Anyone can submit an order with valid data
+      allow create: if isValidId(orderId) && isValidOrder(incoming());
+      // Admin can read all orders; customers can read their own order
+      allow read: if isAdmin() || (
+        isSignedIn() && (
+          (request.auth.token.phone_number != null && request.auth.token.phone_number == resource.data.phone) ||
+          (('customerEmail' in resource.data) && request.auth.token.email != null && request.auth.token.email.lower() == resource.data.customerEmail.lower())
+        )
+      );
+      // Admin can update or cancel orders
+      allow update: if isAdmin() && isValidOrder(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // 4. REVIEWS COLLECTION
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isValidId(reviewId) && isValidReview(incoming());
+      allow update, delete: if isAdmin();
+    }
+
+    // 5. MESSAGES / INQUIRIES COLLECTION
+    match /messages/{messageId} {
+      allow create: if isValidId(messageId) && isValidMessage(incoming());
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 6. STORE SETTINGS COLLECTION
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidSettings(incoming());
+    }
+
+    // 7. ADMIN ROLES
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+  }
+}

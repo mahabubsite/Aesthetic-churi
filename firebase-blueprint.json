@@ -1,0 +1,371 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Customized bangles product item in the catalog",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the product",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Title or display name of the bangles product",
+          "maxLength": 200
+        },
+        "price": {
+          "type": "number",
+          "description": "Price in BDT (টাকা)"
+        },
+        "originalPrice": {
+          "type": "number",
+          "description": "Original strike-through price in BDT"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category name for filtering",
+          "maxLength": 100
+        },
+        "sku": {
+          "type": "string",
+          "description": "Stock keeping unit product code",
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of materials, stones, and craftsmanship",
+          "maxLength": 2000
+        },
+        "images": {
+          "type": "array",
+          "description": "Array of image URLs or Base64 data strings"
+        },
+        "sizes": {
+          "type": "array",
+          "description": "Array of available bangle sizes (e.g. 2.4, 2.6, 2.8)"
+        },
+        "isBestSeller": {
+          "type": "boolean",
+          "description": "Whether the product is marked as best seller"
+        },
+        "isPopular": {
+          "type": "boolean",
+          "description": "Whether the product is marked as popular trending"
+        },
+        "imageType": {
+          "type": "string",
+          "description": "Illustration vector type identifier fallback",
+          "maxLength": 100
+        }
+      },
+      "required": ["id", "name", "price"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product collection category",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique category identifier",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Category title in Bengali",
+          "maxLength": 100
+        },
+        "icon": {
+          "type": "string",
+          "description": "Lucide icon name or emoji identifier",
+          "maxLength": 100
+        },
+        "count": {
+          "type": "number",
+          "description": "Number of products in category"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer purchase order for bangles",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "description": "Human-readable order identifier (e.g. ACC-123456)",
+          "maxLength": 128
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Name of the customer",
+          "maxLength": 150
+        },
+        "phone": {
+          "type": "string",
+          "description": "Primary mobile number for delivery and order linking",
+          "maxLength": 30
+        },
+        "address": {
+          "type": "string",
+          "description": "Detailed shipping delivery address",
+          "maxLength": 500
+        },
+        "shippingArea": {
+          "type": "string",
+          "description": "Delivery zone: dhaka, outside, or emergency",
+          "enum": ["dhaka", "outside", "emergency"]
+        },
+        "shippingCost": {
+          "type": "number",
+          "description": "Delivery shipping fee in BDT"
+        },
+        "subtotal": {
+          "type": "number",
+          "description": "Total price of product items before shipping"
+        },
+        "total": {
+          "type": "number",
+          "description": "Final payable amount in BDT including shipping"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Selected payment method (cod, bkash, nagad, rocket, upay)",
+          "enum": ["cod", "bkash", "nagad", "rocket", "upay"]
+        },
+        "paymentSenderNumber": {
+          "type": "string",
+          "description": "Customer sender mobile number for mobile banking",
+          "maxLength": 30
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "bKash / Nagad / Rocket transaction ID (TrxID)",
+          "maxLength": 100
+        },
+        "orderDate": {
+          "type": "string",
+          "description": "ISO timestamp or formatted date string of order placement",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "description": "Current processing status of the order",
+          "enum": ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"]
+        },
+        "note": {
+          "type": "string",
+          "description": "Special customer instructions or custom requests",
+          "maxLength": 1000
+        },
+        "items": {
+          "type": "array",
+          "description": "Purchased bangle line items with quantities and sizes"
+        }
+      },
+      "required": ["customerName", "phone", "address", "total", "paymentMethod", "shippingArea"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Verified customer testimonial and feedback rating",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique review identifier",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Customer name",
+          "maxLength": 100
+        },
+        "rating": {
+          "type": "number",
+          "description": "Star rating out of 5"
+        },
+        "comment": {
+          "type": "string",
+          "description": "Detailed review feedback",
+          "maxLength": 1000
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of review submission",
+          "maxLength": 100
+        },
+        "city": {
+          "type": "string",
+          "description": "Customer city or district (e.g. ঢাকা, চট্টগ্রাম)",
+          "maxLength": 100
+        },
+        "verified": {
+          "type": "boolean",
+          "description": "Whether this is a verified buyer review"
+        }
+      },
+      "required": ["name", "rating", "comment"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Customer inquiry message submitted via contact form",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique message identifier",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Sender name",
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "description": "Sender mobile number",
+          "maxLength": 30
+        },
+        "message": {
+          "type": "string",
+          "description": "Inquiry text",
+          "maxLength": 2000
+        },
+        "date": {
+          "type": "string",
+          "description": "Submission date",
+          "maxLength": 100
+        },
+        "read": {
+          "type": "boolean",
+          "description": "Read status for admin"
+        }
+      },
+      "required": ["name", "phone", "message"]
+    },
+    "StoreSettings": {
+      "title": "StoreSettings",
+      "description": "Global store settings, separate logos, contact info, and offer popup configuration",
+      "type": "object",
+      "properties": {
+        "siteName": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "logoUrl": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "headerLogoUrl": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "footerLogoUrl": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "hotlinePhone": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "storeEmail": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "storeAddress": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "storeWorkingHours": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "announcementText": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "shippingInsideDhaka": {
+          "type": "number"
+        },
+        "shippingOutsideDhaka": {
+          "type": "number"
+        },
+        "shippingEmergency": {
+          "type": "number"
+        },
+        "merchantBkash": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "merchantNagad": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "merchantRocket": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "merchantUpay": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "promoPopupEnabled": {
+          "type": "boolean"
+        },
+        "promoPopupImage": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "promoPopupTitle": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "promoPopupText": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "promoPopupButtonText": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "promoPopupButtonUrl": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of catalog bangle products"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Product categorization definitions"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders and checkout records"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Verified customer reviews and ratings"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Customer inquiry messages"
+    },
+    "/settings/{settingId}": {
+      "schema": "StoreSettings",
+      "description": "Store configuration and dynamic settings"
+    }
+  }
+}

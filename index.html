@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Fix: Prevent "Cannot set property fetch of #<Window> which has only a getter"
+      (function () {
+        try {
+          var _origFetch = window.fetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function () {
+              return _origFetch;
+            },
+            set: function (newFetch) {
+              _origFetch = newFetch;
+            },
+            configurable: true,
+            enumerable: true,
+          });
+        } catch (e) {
+          // ignore
+        }
+      })();
+    </script>
+    <title>Aesthetic customized churi – হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল</title>
+    <meta name="description" content="হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল। 💃 যেকোনো আউফিটের সাথে মিলিয়ে যেকোনো ডিজাইনের চুড়ি বানিয়ে নিন আমাদের সাথে। প্রিমিয়াম কাচের চুড়ি, গোল্ড প্লেটেড জয়পুরী বালা ও কাস্টমাইজড ব্রাইডাল কালেকশন।" />
+    <meta name="keywords" content="Aesthetic customized churi, কাস্টমাইজড চুড়ি, কাচের চুড়ি, জয়পুরী বালা, ব্রাইডাল চুড়া, handmade bangles, aesthetic bangles, bridal jewelry" />
+    <meta name="author" content="Aesthetic customized churi" />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+    <!-- OpenGraph Social Sharing Cards -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Aesthetic customized churi" />
+    <meta property="og:title" content="Aesthetic customized churi – হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল" />
+    <meta property="og:description" content="হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল। 💃 যেকোনো আউফিটের সাথে মিলিয়ে যেকোনো ডিজাইনের চুড়ি বানিয়ে নিন আমাদের সাথে।" />
+    <meta property="og:image" content="/churilogo.png" />
+    <meta property="og:locale" content="bn_BD" />
+
+    <!-- Twitter / X Social Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Aesthetic customized churi – হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল" />
+    <meta name="twitter:description" content="হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল। 💃 যেকোনো আউফিটের সাথে মিলিয়ে যেকোনো ডিজাইনের চুড়ি বানিয়ে নিন আমাদের সাথে।" />
+    <meta name="twitter:image" content="/churilogo.png" />
+
+    <!-- Schema.org JSON-LD Structured Data for Rich Snippets -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "JewelryStore",
+        "name": "Aesthetic customized churi",
+        "image": "https://aestheticcustomizedchuri.com/churilogo.png",
+        "description": "হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল। যেকোনো আউফিটের সাথে মিলিয়ে যেকোনো ডিজাইনের চুড়ি বানিয়ে নিন আমাদের সাথে।",
+        "brand": {
+          "@type": "Brand",
+          "name": "Aesthetic customized churi"
+        },
+        "priceRange": "৳৳",
+        "currenciesAccepted": "BDT",
+        "paymentAccepted": "Cash on Delivery, bKash, Nagad, Rocket, Upay",
+        "areaServed": "Bangladesh",
+        "url": "https://aestheticcustomizedchuri.com/"
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+  </head>
+  <body class="font-sans antialiased text-slate-800 bg-[#FAF7F5]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

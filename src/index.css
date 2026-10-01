@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Hind Siliguri', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom background patterns and gradients matching the reference image */
+.hero-pattern {
+  background-color: #4a0d1d;
+  background-image: 
+    radial-gradient(circle at 80% 40%, rgba(138, 28, 59, 0.45) 0%, transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(92, 12, 33, 0.6) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(70, 8, 23, 0.8) 0%, transparent 100%);
+}
+
+.comparison-bg {
+  background-color: #551627;
+  background-image: radial-gradient(circle at 50% 50%, rgba(105, 23, 46, 0.5) 0%, transparent 85%);
+}
+
+.gold-glow {
+  box-shadow: 0 0 25px rgba(234, 179, 8, 0.25);
+}
+
+.card-gold-border {
+  border: 1.5px solid #d49b38;
+}

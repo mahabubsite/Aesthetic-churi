@@ -1,0 +1,6 @@
+{
+  "name": "Aesthetic customized churi",
+  "description": "হাতের ছোঁয়াতেই প্রকাশ পাক আপনার স্টাইল। যেকোনো আউফিটের সাথে মিলিয়ে যেকোনো ডিজাইনের চুড়ি বানিয়ে নিন আমাদের সাথে।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
