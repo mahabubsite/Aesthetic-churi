@@ -1,20 +1,30 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Aesthetic Customized Churi
 
-# Run and deploy your AI Studio app
+Welcome to **Aesthetic Customized Churi** – your destination for aesthetic and customized churi designs.
 
-This contains everything you need to run your app locally.
+Explore **Aesthetic Customized Churi** online and discover the website here:
 
-View your app in AI Studio: https://ai.studio/apps/ae58d737-aff3-41ed-8c66-601b4c628ac7
+### 🌐 Official Website
+**[Aesthetic Customized Churi](https://aesthetic-churi.vercel.app)**
 
-## Run Locally
+Visit: https://aesthetic-churi.vercel.app
 
-**Prerequisites:**  Node.js
+---
 
+### About Aesthetic Customized Churi
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Aesthetic Customized Churi** is an online destination for aesthetic churi lovers. Visit our website to explore the world of customized churi designs.
+
+**Website:** [https://aesthetic-churi.vercel.app](https://aesthetic-churi.vercel.app)
+
+**Aesthetic Customized Churi – Your Aesthetic Churi Destination.**
+
+---
+
+### Keywords
+
+Aesthetic Customized Churi, Aesthetic Churi, Customized Churi, Aesthetic Customized Churi Website, Aesthetic Churi Online, Aesthetic Customized Churi Bangladesh
+
+---
+
+**Explore Now:** [Aesthetic Customized Churi](https://aesthetic-churi.vercel.app)
