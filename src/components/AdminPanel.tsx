@@ -81,6 +81,20 @@ interface AdminPanelProps {
   onExit: () => void;
 }
 
+const ProductImagePreview: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center px-1 text-center text-[8px] leading-tight text-slate-400">
+        ছবিটি লোড করা যায়নি
+      </div>
+    );
+  }
+
+  return <img src={src} alt={alt} className="w-full h-full object-cover" onError={() => setHasError(true)} />;
+};
+
 export const AdminPanel: React.FC<AdminPanelProps> = ({
   products,
   orders,
@@ -398,15 +412,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const newImages: string[] = [];
     const filesArray = Array.from(files);
+    const newImages = new Array<string>(filesArray.length);
     let loadedCount = 0;
 
-    filesArray.forEach((file) => {
+    filesArray.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          newImages.push(event.target.result as string);
+          newImages[index] = event.target.result as string;
         }
         loadedCount++;
         if (loadedCount === filesArray.length) {
@@ -3544,8 +3558,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     type="button"
                     onClick={() => {
                       const input = document.getElementById('new-product-img-url') as HTMLInputElement;
-                      if (input && input.value.trim()) {
-                        setProductForm((prev) => ({ ...prev, images: [...prev.images, input.value.trim()] }));
+                      const imageUrl = input?.value.trim();
+                      if (input && imageUrl) {
+                        setProductForm((prev) => ({ ...prev, images: [...prev.images, imageUrl] }));
                         input.value = '';
                       }
                     }}
@@ -3559,8 +3574,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 {productForm.images.length > 0 && (
                   <div className="flex gap-2 flex-wrap pt-1">
                     {productForm.images.map((imgUrl, idx) => (
-                      <div key={idx} className="relative w-18 h-18 rounded-lg border-2 border-slate-700 overflow-hidden bg-slate-900 group">
-                        <img src={imgUrl} alt={`Uploaded ${idx + 1}`} className="w-full h-full object-cover" />
+                      <div key={`${imgUrl}-${idx}`} className="relative w-18 h-18 rounded-lg border-2 border-slate-700 overflow-hidden bg-slate-900 group">
+                        <ProductImagePreview src={imgUrl} alt={`Uploaded ${idx + 1}`} />
                         {idx === 0 && (
                           <span className="absolute bottom-1 left-1 bg-amber-400 text-slate-950 font-black text-[8px] px-1 py-0.2 rounded shadow-xs">
                             মূল ছবি
