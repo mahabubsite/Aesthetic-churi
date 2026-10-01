@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
-import fs from 'fs';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
@@ -21,51 +20,84 @@ const PROJECT_ID = 'aestheticcustomizedchuri';
 let adminDb: Firestore | null = null;
 let firebaseInitialized = false;
 
-try {
-  let serviceAccount: any = null;
-  const keyPath = path.resolve('firebase-admin-key.json');
-  if (fs.existsSync(keyPath)) {
-    serviceAccount = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
-  }
+const FIREBASE_PROJECT_ID =
+  process.env.FIREBASE_PROJECT_ID || PROJECT_ID;
 
-  if (serviceAccount && !getApps().length) {
+const FIREBASE_CLIENT_EMAIL =
+  process.env.FIREBASE_CLIENT_EMAIL;
+
+const FIREBASE_PRIVATE_KEY =
+  process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+const ADMIN_PASSWORD =
+  process.env.ADMIN_PASSWORD;
+
+try {
+  if (
+    FIREBASE_CLIENT_EMAIL &&
+    FIREBASE_PRIVATE_KEY &&
+    !getApps().length
+  ) {
     initializeApp({
-      credential: cert(serviceAccount),
-      projectId: PROJECT_ID,
+      credential: cert({
+        projectId: FIREBASE_PROJECT_ID,
+        clientEmail: FIREBASE_CLIENT_EMAIL,
+        privateKey: FIREBASE_PRIVATE_KEY,
+      }),
+      projectId: FIREBASE_PROJECT_ID,
     });
+
     adminDb = getFirestore();
     firebaseInitialized = true;
-    console.log(`[Firebase Admin] Successfully connected to Firebase Project: ${PROJECT_ID}`);
+
+    console.log(
+      `[Firebase Admin] Successfully connected to Firebase Project: ${FIREBASE_PROJECT_ID}`
+    );
   } else if (getApps().length) {
     adminDb = getFirestore();
     firebaseInitialized = true;
+  } else {
+    console.warn(
+      '[Firebase Admin] Missing Firebase environment variables.'
+    );
   }
 
-  // Ensure Firebase Authentication admin user exists with requested password
-  if (firebaseInitialized) {
+  // Ensure Firebase Authentication admin user exists
+  if (firebaseInitialized && ADMIN_PASSWORD) {
     (async () => {
       try {
         const auth = getAdminAuth();
+
         try {
           const user = await auth.getUserByEmail(ADMIN_EMAIL);
+
           await auth.updateUser(user.uid, {
-            password: 'Mohammad_robiul',
+            password: ADMIN_PASSWORD,
             emailVerified: true,
           });
-          console.log(`[Firebase Admin Auth] Admin user ${ADMIN_EMAIL} password updated successfully.`);
+
+          console.log(
+            `[Firebase Admin Auth] Admin user ${ADMIN_EMAIL} password updated successfully.`
+          );
         } catch (err: any) {
           if (err.code === 'auth/user-not-found') {
             await auth.createUser({
               email: ADMIN_EMAIL,
-              password: 'Mohammad_robiul',
+              password: ADMIN_PASSWORD,
               displayName: 'Admin Robiul',
               emailVerified: true,
             });
-            console.log(`[Firebase Admin Auth] Admin user ${ADMIN_EMAIL} created successfully.`);
+
+            console.log(
+              `[Firebase Admin Auth] Admin user ${ADMIN_EMAIL} created successfully.`
+            );
           }
         }
       } catch (authErr: any) {
-        console.warn('[Firebase Admin Auth] Warning syncing admin user:', authErr.message);
+        console.warn(
+          '[Firebase Admin Auth] Warning syncing admin user:',
+          authErr.message
+        );
       }
     })();
   }
@@ -82,7 +114,10 @@ app.post('/api/admin/firebase-login', async (req: Request, res: Response) => {
     const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPass = (password || '').trim();
 
-    if (cleanEmail === ADMIN_EMAIL.toLowerCase() && cleanPass === 'Mohammad_robiul') {
+        if (
+              cleanEmail === ADMIN_EMAIL.toLowerCase() &&
+             cleanPass === ADMIN_PASSWORD
+) {
       try {
         const auth = getAdminAuth();
         let uid = 'admin-user';
@@ -92,7 +127,7 @@ app.post('/api/admin/firebase-login', async (req: Request, res: Response) => {
         } catch {
           const newUser = await auth.createUser({
             email: ADMIN_EMAIL,
-            password: 'Mohammad_robiul',
+            password: ADMIN_PASSWORD,
             emailVerified: true,
           });
           uid = newUser.uid;

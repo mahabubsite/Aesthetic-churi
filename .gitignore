@@ -6,3 +6,5 @@ dist/
 firebase-admin-key.json
 .vercel/
 *.log
+.DS_Store
+Thumbs.db
